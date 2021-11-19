@@ -1,0 +1,9 @@
+test see all bots button
+test accuracy of win/loss count
+test duel button
+
+
+bugs:
+	see all bots button does not work(does not get all bots)
+	wins/losses count is not accurate(wins are counted as losses)
+	
