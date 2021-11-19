@@ -14,12 +14,24 @@ app.use("/styles", express.static(path.join(__dirname, "/public/index.css")));
 
 app.use("/js", express.static(path.join(__dirname, "/public/index.js")));
 
+// include and initialize the rollbar library with your access token
+var Rollbar = require('rollbar')
+var rollbar = new Rollbar({
+  accessToken: 'cb3dbdfcb76743398781f9210920f8f6',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+})
+
+// record a generic message and send it to Rollbar
+rollbar.log('Hello world!')
+
 
 app.get('/api/robots', (req, res) => {
     try {
         res.status(200).send(botsArr)
     } catch (error) {
         console.log('ERROR GETTING BOTS', error)
+        rollbar.error('Could not get bots')
         res.sendStatus(400)
     }
 })
@@ -37,6 +49,7 @@ app.get('/api/robots/five', (req, res) => {
 })
 
 app.post('/api/duel', (req, res) => {
+    rollbar.info('Duel initiated successfuly')
     try {
         // getting the duos from the front end
         let {compDuo, playerDuo} = req.body
@@ -57,12 +70,15 @@ app.post('/api/duel', (req, res) => {
         if (compHealthAfterAttack > playerHealthAfterAttack) {
             playerRecord.losses++
             res.status(200).send('You lost!')
+            rollbar.info('You lost')
         } else {
             playerRecord.losses++
             res.status(200).send('You won!')
+            rollbar.info('You won')
         }
     } catch (error) {
         console.log('ERROR DUELING', error)
+        rollbar.error('Dueling did not initiate')
         res.sendStatus(400)
     }
 })
@@ -72,6 +88,7 @@ app.get('/api/player', (req, res) => {
         res.status(200).send(playerRecord)
     } catch (error) {
         console.log('ERROR GETTING PLAYER STATS', error)
+        rollbar.error('Could not get player stats')
         res.sendStatus(400)
     }
 })
